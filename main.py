@@ -6,9 +6,9 @@ import statistics
 
 
 #from fun_GA import select_ind, mate_ind,mutac_ind, buscarnegativos
-from fun_sys import run_test, gen_signal, add_noise
+from fun_sys import run_test, gen_signal, add_noise, score_pob
 from fun_sys import FiltroFIR, FiltroEWMA
-#, save_ind, load_data, plot_filtrados, plot_error, plot_comparacion, plot_best_indN, plot_in_out
+#from fun_log save_ind, load_data, plot_filtrados, plot_error, plot_comparacion, plot_best_indN, plot_in_out
 
 
 
@@ -35,16 +35,6 @@ lim_N = [Nmin, Nmax]
 
 #lim_Nmax = [200, 200]             #Hay que revisar estos limites porque el filtro dEWMA ya hace una estimacion de N usando estos valores
 #lim_Nmin = [5, 5]              #Quiza estos parametros hay que incluirlos en los limites de arriba, para pensar
-
-
-# Variables auxiliares ----------------------------------------------------------------------------------------------------------------------
-poblacion_actual = []           #Array con la poblacion actual 
-poblacion_nueva = []            #Array donde se van volcando los individuos de la proxima poblacion
-salida_filtro = []              #Array de las salidas del filtro con cada set de parametros
-evol_error_medio = []  
-error_max = np.zeros(nGen)               #Evolucion del error en funcion de las generaciones
-error_min = np.zeros(nGen)
-error_minomorum = np.zeros(nGen)
 
 
 
@@ -105,6 +95,8 @@ def create_pop(num_ind):
 
     return poblacion
 
+
+
 def eval_salida(pura, filtrada):
     #Toma la curva filtrada y la curva del contagio
     #comparando las 2 y haciendo la evaluacion (error cuadratico medio o error medio)
@@ -135,11 +127,23 @@ def eval_salida(pura, filtrada):
 
 # main ---------------------------------------------------------------------------------------------------------------------------
 
-print('Se van a realizar ',corridas_totales,'corridas totales')
+# Lazo de corridas ----------
+print('Se van a realizar',corridas_totales,'corridas totales')
 for corridas in range(corridas_totales):
-    print('Corrida numero ',corridas,'de ',corridas_totales)
+    print('Corrida numero',corridas,'de',corridas_totales)
 
     
+    # Variables auxiliares ----------------------------------------------------------------------------------------------------------------------
+    poblacion_actual = []           #Array con la poblacion actual 
+    poblacion_nueva = []            #Array donde se van volcando los individuos de la proxima poblacion
+    salida_filtro = []              #Array de las salidas del filtro con cada set de parametros
+    evol_error_medio = []  
+    error_max = np.zeros(nGen)      #Evolucion del error en funcion de las generaciones
+    error_min = np.zeros(nGen)
+    error_med = np.zeros(nGen)
+    error_minomorum = np.zeros(nGen)
+
+
     # Generacion de datos --------------------------------------------------------------------------------------
     #datos_orig = load_data()                           #Obtengo los datos de contagio
     datos_puros = gen_signal(amp, per, fase, muestras)  #Genero la señal de prueba
@@ -155,13 +159,13 @@ for corridas in range(corridas_totales):
     # Generacion de la poblacion   
     poblacion_actual = create_pop(pDim)
 
+    #Lazo de generaciones -------------------------------
     for gen in range(nGen):
         print('Generacion ',gen, 'de ', nGen)
 
         poblacion_nueva = []                            #Reinicio la poblacion nueva
     
         error_minimo = 10000                            #Maximizo el minimo para encontrar el primer minimo de la poblacion
-        
         error_maximo = 0                                #Minimizo el maximo para encontrar el primer maximo de la poblacion
         error_promedio_gen = 0                          #Vuelvo a 0 los valores de la generacion
         ind_minimo_err = 0
@@ -171,7 +175,7 @@ for corridas in range(corridas_totales):
         # Evaluo cada individuo y le asigno el error
         for ind in range(len(poblacion_actual)):
             #Aplicar  filtro a los tipitos
-            [salida_filtro, Ns] =  run_test(poblacion_actual[ind], datos_orig)
+            [salida_filtro, Ns] =  run_test(poblacion_actual[ind], datos_orig, Nmin, Nmax)
     
             #Evaluacion de la salida del filtro
             error_actual = eval_salida(datos_puros, salida_filtro)
@@ -201,3 +205,10 @@ for corridas in range(corridas_totales):
         error_min[gen] = error_minimo
         error_max[gen] = error_maximo
         error_minomorum[gen] = error_superman
+
+        #Calculo el error promedio de la generacion
+        error_promedio_gen = error_promedio_gen / len(poblacion_actual)
+        error_med[gen] = error_promedio_gen
+        
+        #Asignacion de puntajes
+        poblacion_actual = score_pob(poblacion_actual, error_maximo, error_minimo)

@@ -4,8 +4,6 @@ import csv
 import math
 import matplotlib.pyplot as plt
 
-from main import *
-
 def gen_signal(amp, per, fases, muestras):
     # Recibe las amplitudes, periodos y fases como vectores y el numero de muestras es un int.
     # devuelve la señal como suma de todos los senos usando los parametros antes dados.
@@ -45,7 +43,7 @@ def add_noise(amp, s):
     return st
 
 
-def FiltrodEWMA(param, data):
+def FiltrodEWMA(param, data, Nmin, Nmax):
     '''
     Variable: Array a calcular, 
     N: factor de aprendizaje, 
@@ -126,11 +124,34 @@ def FiltroEWMA(N, variable):
 
 
 
-def run_test(param, data):
+def run_test(param, data, Nmin, Nmax):
     #Funcion que corre los 5 parametros recividos como lista en el filtro dEWMA
     #deve devolver la curva resultado del filtro
     #este filtro debe recivir el vector de valores de contagio del COVID
 
-    return FiltrodEWMA(param, data)
+    return FiltrodEWMA(param, data, Nmin, Nmax)
     #return FiltroEWMA(param[0], data)
     #return FiltroFIR(param[0], data)
+
+
+
+def score_pob(poblacion, error_maximo, error_minimo):
+    #Esta funcion deberia tomar el error de la funcion eval_test y asignar un puntaje 
+
+    delta_error = error_maximo - error_minimo
+
+    for ind in range(len(poblacion)):
+        #En la ultima columna se almacena el error
+        mod = (poblacion[ind,-1] - error_minimo) / delta_error
+        if mod > 0.000001 :
+            poblacion[ind,-1]= 1 * (mod**2)     #Relacion Exponencial 1
+        else:
+            poblacion[ind,-1]= 0.000001
+        #error_punt[ind,1]= PUNTUACION_MAXIMA * (error_punt[ind,0] - error_minimo) / delta_error             #Relacion Exponencial 2
+        #error_punt[ind,1]= PUNTUACION_MAXIMA - (error_punt[ind,0] * PUNTUACION_MAXIMA / error_maximo)       #Relacion lineal 1
+        #if  error_punt[ind,1] < 0 :
+        #    error_punt[ind,1]=0
+
+    poblacion = sorted(poblacion, key=lambda a_entry: a_entry[-1]) 
+
+    return poblacion
