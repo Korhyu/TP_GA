@@ -98,7 +98,7 @@ def FiltrodEWMA(param, data, Nmin, Nmax):
     #plt.plot(Ns)
     #plt.show()
 
-    return [dEWMA, Ns]
+    return [dEWMA, np.array(Ns)]
 
 
 def FiltroFIR(N, variable):
@@ -142,8 +142,8 @@ def score_pob(poblacion, error_maximo, error_minimo):
 
     for ind in range(len(poblacion)):
         #En la ultima columna se almacena el error
-        mod = (poblacion[ind,-1] - error_minimo) / delta_error
-        poblacion[ind,-1]= 1 * (mod**2)     #Relacion Exponencial 1
+        mod = (poblacion[ind][-1] - error_minimo) / delta_error
+        poblacion[ind][-1]= 1 * (mod**2)     #Relacion Exponencial 1
         
         #if mod > 0.000001 :
         #    poblacion[ind,-1]= 1 * (mod**2)     #Relacion Exponencial 1
