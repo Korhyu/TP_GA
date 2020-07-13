@@ -17,13 +17,13 @@ from fun_gen import seleccion, mutacion, cruza
 PUNTUACION_MAXIMA = 100
 
 # Parametros del GA ----------------------------------------------------------------------------------------------------------------------
-nGen = 5                    #Generaciones a correr
-pDim = 4                     #Tamaño de la poblacion
+nGen = 40                    #Generaciones a correr
+pDim = 40                     #Tamaño de la poblacion
 pMuta = 3                     #Probabilidad de que un individuo mute expresade en %
 dMuta = 50                    #delta de Muta, osea cuanto puede variar en la mutacion expresado en %
 pCruza = 40                   #probabilidad de cruza porcentual
 
-corridas_totales = 5
+corridas_totales = 10
 
 
 # Parametros del dEWMA -------------------------------------------------------------------------------------------------------------------
@@ -69,9 +69,10 @@ def param_rand():
     # N - gamma - alfa - sigma - puntaje(fuera de esta funcion)
     param = [0, 0, 0, 0, 0]
 
-    param[0] = rd.randint(lim_N[0], lim_N[1])               #Numeros enteros
+    #param[0] = rd.randint(lim_N[0], lim_N[1])               #Numeros enteros
     
-    param[1] = rd.uniform(lim_gamma[0], lim_gamma[1])       #Numeros con coma
+    param[0] = rd.uniform(lim_N[0], lim_N[1])               #Numeros con coma
+    param[1] = rd.uniform(lim_gamma[0], lim_gamma[1])
     param[2] = rd.uniform(lim_alfa[0], lim_alfa[1])
     param[3] = rd.uniform(lim_sigma[0], lim_sigma[1])
 
@@ -95,7 +96,7 @@ def create_pop(num_ind):
         parametros = np.array(param_rand())
         poblacion = np.vstack((poblacion,parametros))
 
-    return poblacion
+    return np.array(poblacion)
 
 
 
@@ -154,8 +155,8 @@ for corrida in range(corridas_totales):
 
     
     # Variables auxiliares ----------------------------------------------------------------------------------------------------------------------
-    # poblacion_actual = []           #Array con la poblacion actual 
-    # poblacion_nueva = []            #Array donde se van volcando los individuos de la proxima poblacion
+    #poblacion_actual = []           #Array con la poblacion actual 
+    #poblacion_nueva = []            #Array donde se van volcando los individuos de la proxima poblacion
     salida_filtro = []              #Array de las salidas del filtro con cada set de parametros
     evol_error_medio = []  
     error_max = np.zeros(nGen)      #Evolucion del error en funcion de las generaciones
@@ -225,11 +226,19 @@ for corrida in range(corridas_totales):
         poblacion_actual = score_pob(poblacion_actual, error_maximo, error_minimo)
 
         #Seleccion
+        log_time("Seleccion")
         poblacion_actual= seleccion(poblacion_actual)
+        log_time("Seleccion")
+
         #Cruza
+        log_time("Cruza")
         poblacion_actual= cruza(poblacion_actual,pCruza)
+        log_time("Cruza")
+        
         #Mutacion
+        log_time("Mutacion")
         poblacion_actual= mutacion(poblacion_actual,pMuta,dMuta)
+        log_time("Mutacion")
 
     log_ind(superman,gen_superman,corrida)
     log_ind_csv(superman, corrida)

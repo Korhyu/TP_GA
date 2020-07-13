@@ -12,8 +12,8 @@ log_funciones = "Log/Funciones.csv"
 log_csv = "Log/Individuos.csv"
 
 
-time1 = 0
-time2 = 0
+tiempo_pas = 0
+
 
 
 def log_clear():
@@ -65,22 +65,40 @@ def log_ind_csv (individuo, corrida):
 def log_time (funcion):
     #funcion para registar el tiempo que demora la funcion
 
-    global time1
-    global time2
+    global tiempo_pas
 
-    if time1 == 0:
-        time1 = int(time.time())
-    elif time2 == 0:
-        time2 = int(time.time())
+    if tiempo_pas is 0:
+        tiempo_pas = time.time()
+    
+    else:
+        tiempo_act = time.time() - tiempo_pas
+        tiempo_pas = 0
 
+        with open(log_funciones, "a") as file:
+            fieldnames = ['Funcion', 'Tiempo_ms']
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writerow({fieldnames[0]: funcion, fieldnames[1]: tiempo_act})
+
+    
+    """
+    if funcion in [funciones[0] for funciones in funciones]:
+        #El elemento ya se ingreso en la lista y debo sacar el tiempo total
+        tiempo_act = time.time()
+        indice = funciones.index()
+        tiempo_pas = funciones[indice, 1]
+        funciones.remove(funcion)
+        
+        #Guardo el log
         with open(log_funciones, "a") as file:
             fieldnames = ['Funcion', 'Tiempo_ms']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writerow({fieldnames[0]: funcion, fieldnames[1]: time2-time1})
 
-            time1 = 0
-            time2 = 0
 
+    else:
+        fun = [funcion , time.time()]
+        funciones.append(fun)
+    """
 
     
 
@@ -98,7 +116,7 @@ def plot_error(error_min, error_max, error_medio, error_super, error_FIR, error_
     plt.ylabel('Error')
     plt.xlabel('Generacion')
     plt.grid(True)
-    plt.legend(loc=4)
+    plt.legend(loc=1)
 
     
     #Error minimo comparado con FIR y EWMA

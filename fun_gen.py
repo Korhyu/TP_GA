@@ -30,7 +30,7 @@ def cruza(poblacion_nueva,pCruza):
             aux=np.vstack((aux, poblacion_nueva[cruza,:])) #agrego al "padre a cruzar"
         else:
             aux_pasa=np.vstack((aux_pasa, poblacion_nueva[cruza,:])) # agrego a los individuos que no se van a cruzar
-    print('Cantidad de cruzas: ', cant_cruza)
+    #print('Cantidad de cruzas: ', cant_cruza)
     if np.ndim(aux) > 1: #pregrunto si hay alguno para cruzar
         i=len(aux[:,0])-1 
         if i%2 != 0 : #si hay una cantidad impar hago pasar directoa un padre. 
@@ -58,7 +58,7 @@ def mutacion(oPob,pMuta,dMuta):
     cuenta=0
     max_muta=(dMuta/100)+1 #culculo de maxima mutacion hacia arriba dMuta=taza de mutacion
     min_muta=1-(dMuta/100) #culculo de maxima mutacion hacia abajo dMuta=taza de mutacion
-    print('Max muta',max_muta, 'y Min Muta', min_muta)
+    #print('Max muta',max_muta, 'y Min Muta', min_muta)
     for total in range(len(oPob[:,0])):
         for param in range(len(oPob[0,:]-1)):
             if pMuta > (random.randrange(0, 1000, 1))/10: #avanzo por todos los parametros y segun la probabilidad de muta se eligen
@@ -67,7 +67,7 @@ def mutacion(oPob,pMuta,dMuta):
                     aux[total,param]= round(random.uniform(aux[total,param]*min_muta,aux[total,param]*max_muta)) #muto el parametro entero
                 else:
                     aux[total,param]= random.uniform(aux[total,param]*min_muta,aux[total,param]*max_muta) #muto el parametro no entero               
-    print('Cantidad de parametros mutados', cuenta)
+    #print('Cantidad de parametros mutados', cuenta)
     return aux
 
 

@@ -72,17 +72,13 @@ def FiltrodEWMA(param, data, Nmin, Nmax):
         #sigma = sigma / (2 * (dEWMA[j-1])**(1/2))
         error = abs(variable[j]-dEWMA[j-1])
         if error > sigma:
-            N = round(N/gama)
+            N = (N/gama)
             if N < Nmin:
                 N = Nmin
         if error < sigma/alfa: 
-            N = round(N * gama)
+            N = (N * gama)
             if N > Nmax:
                 N = Nmax
-        if N < Nmin:
-            N = Nmin
-        elif N > Nmax:
-            N = Nmax
         Ns.append(N)
         a = dEWMA[j-1] +(variable[j]-dEWMA[j-1])/N
         dEWMA = np.append( dEWMA , np.array(a))
