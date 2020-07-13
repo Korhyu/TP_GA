@@ -158,6 +158,6 @@ def score_pob(poblacion, error_maximo, error_minimo):
         #if  error_punt[ind,1] < 0 :
         #    error_punt[ind,1]=0
 
-    poblacion = sorted(poblacion, key=lambda a_entry: a_entry[-1]) 
+    poblacion = np.array(sorted(poblacion, key=lambda a_entry: a_entry[-1]))
 
     return poblacion

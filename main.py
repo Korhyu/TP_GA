@@ -9,6 +9,7 @@ import statistics
 from fun_sys import run_test, gen_signal, add_noise, score_pob
 from fun_sys import FiltroFIR, FiltroEWMA
 from fun_log import log_clear, log_ind, log_ind_csv, log_time, plot_error, plot_best_ind, plot_clear
+from fun_gen import seleccion, mutacion, cruza
 #from fun_log save_ind, load_data, plot_filtrados, plot_error, plot_comparacion, plot_best_indN, plot_in_out
 
 
@@ -17,7 +18,7 @@ PUNTUACION_MAXIMA = 100
 
 # Parametros del GA ----------------------------------------------------------------------------------------------------------------------
 nGen = 5                    #Generaciones a correr
-pDim = 2                     #Tamaño de la poblacion
+pDim = 4                     #Tamaño de la poblacion
 pMuta = 3                     #Probabilidad de que un individuo mute expresade en %
 dMuta = 50                    #delta de Muta, osea cuanto puede variar en la mutacion expresado en %
 pCruza = 40                   #probabilidad de cruza porcentual
@@ -153,8 +154,8 @@ for corrida in range(corridas_totales):
 
     
     # Variables auxiliares ----------------------------------------------------------------------------------------------------------------------
-    poblacion_actual = []           #Array con la poblacion actual 
-    poblacion_nueva = []            #Array donde se van volcando los individuos de la proxima poblacion
+    # poblacion_actual = []           #Array con la poblacion actual 
+    # poblacion_nueva = []            #Array donde se van volcando los individuos de la proxima poblacion
     salida_filtro = []              #Array de las salidas del filtro con cada set de parametros
     evol_error_medio = []  
     error_max = np.zeros(nGen)      #Evolucion del error en funcion de las generaciones
@@ -224,11 +225,11 @@ for corrida in range(corridas_totales):
         poblacion_actual = score_pob(poblacion_actual, error_maximo, error_minimo)
 
         #Seleccion
-
+        poblacion_actual= seleccion(poblacion_actual)
         #Cruza
-
+        poblacion_actual= cruza(poblacion_actual,pCruza)
         #Mutacion
-
+        poblacion_actual= mutacion(poblacion_actual,pMuta,dMuta)
 
     log_ind(superman,gen_superman,corrida)
     log_ind_csv(superman, corrida)

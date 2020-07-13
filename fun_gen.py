@@ -6,23 +6,23 @@ import random
 def seleccion(poblacion_actual): #Recibo la los parametros del filtro (poblacion_actual) y su puntuacion (seguda columna de error_punt)
     #Funcion que toma la poblacion y los errores y puntajes y realiza la seleccion, mientras mas puntos mayor la seleccion de ese individuo
     pob_sel=np.copy(poblacion_actual) #creo una matriz auxiliar para ir cargando la poblacion seleccionada
-    for pob in range(int(len(poblacion_actual[:,0]))):
+    for pob in range(int(len(poblacion_actual[:,0]))-1,0,-1):
         rd=random.random()
-        for aux in range(int(len(poblacion_actual[:,0]))):
+        for aux in range(int(len(poblacion_actual[:,0]))-1,0,-1):
             
             if rd > poblacion_actual[aux,4]:
                 if aux == 0:
-                    pob_sel=poblacion_actual[aux,:]
+                    pob_sel[pob,:]=poblacion_actual[aux,:]
                 else:
-                    pob_sel=poblacion_actual[aux-1,:]
+                    pob_sel[pob,:]=poblacion_actual[aux-1,:]
                 break
       
     return pob_sel
 
 def cruza(poblacion_nueva,pCruza):
     #Funcion de cruza de la poblacion
-    aux = np.arange(6) # auxiliar para las cruzas
-    aux_pasa = np.arange(6) #auxiliar para los que no se cruzan
+    aux = np.arange(5) # auxiliar para las cruzas
+    aux_pasa = np.arange(5) #auxiliar para los que no se cruzan
     cant_cruza=0
     for cruza in range(int(len(poblacion_nueva[:,0]))): #en este for se elige quienes se cruzan 
         if pCruza > (random.randrange(0, 1000, 1))/10: #comparacion de la probabilidad de cruce
@@ -36,7 +36,7 @@ def cruza(poblacion_nueva,pCruza):
         if i%2 != 0 : #si hay una cantidad impar hago pasar directoa un padre. 
             aux_pasa=np.vstack((aux_pasa, aux[i,:])) #copio el ultimo padre directo
             i=i-1
-        aux_cruz=np.arange(float(6)) #auxiliar pa la cruza
+        aux_cruz=np.arange(float(5)) #auxiliar pa la cruza
         while i>=2:
             pQuiebre=random.randrange(0,4,1) #calculo el punto de quiebre para la cruza
             for pQ in range(pQuiebre):
@@ -60,7 +60,7 @@ def mutacion(oPob,pMuta,dMuta):
     min_muta=1-(dMuta/100) #culculo de maxima mutacion hacia abajo dMuta=taza de mutacion
     print('Max muta',max_muta, 'y Min Muta', min_muta)
     for total in range(len(oPob[:,0])):
-        for param in range(len(oPob[0,:])):
+        for param in range(len(oPob[0,:]-1)):
             if pMuta > (random.randrange(0, 1000, 1))/10: #avanzo por todos los parametros y segun la probabilidad de muta se eligen
                 cuenta=cuenta+1                
                 if param == 0 :
