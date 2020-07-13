@@ -4,10 +4,16 @@ import csv
 import math
 import matplotlib.pyplot as plt
 import os, glob
+import time
 
 
 log_individuos = "Log/Individuos.txt"
+log_funciones = "Log/Funciones.csv"
 log_csv = "Log/Individuos.csv"
+
+
+time1 = 0
+time2 = 0
 
 
 def log_clear():
@@ -18,6 +24,11 @@ def log_clear():
     #Escribo los encabezados del CSV
     with open(log_csv, mode='w') as csv_file:
         fieldnames = ['N', 'gamma', 'alfa', 'sigma', 'corrida']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+
+    with open(log_funciones, mode='w') as csv_file:
+        fieldnames = ['Funcion', 'Tiempo_ms']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
         
@@ -54,7 +65,24 @@ def log_ind_csv (individuo, corrida):
 def log_time (funcion):
     #funcion para registar el tiempo que demora la funcion
 
-    pass
+    global time1
+    global time2
+
+    if time1 == 0:
+        time1 = int(time.time())
+    elif time2 == 0:
+        time2 = int(time.time())
+
+        with open(log_funciones, "a") as file:
+            fieldnames = ['Funcion', 'Tiempo_ms']
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writerow({fieldnames[0]: funcion, fieldnames[1]: time2-time1})
+
+            time1 = 0
+            time2 = 0
+
+
+    
 
 
 

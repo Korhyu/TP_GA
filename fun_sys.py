@@ -4,6 +4,8 @@ import csv
 import math
 import matplotlib.pyplot as plt
 
+from fun_log import log_time
+
 def gen_signal(amp, per, fases, muestras):
     # Recibe las amplitudes, periodos y fases como vectores y el numero de muestras es un int.
     # devuelve la señal como suma de todos los senos usando los parametros antes dados.
@@ -97,6 +99,7 @@ def FiltrodEWMA(param, data, Nmin, Nmax):
     #plt.title('Evol de Ns')
     #plt.plot(Ns)
     #plt.show()
+
 
     return [dEWMA, np.array(Ns)]
 

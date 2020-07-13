@@ -181,6 +181,7 @@ for corrida in range(corridas_totales):
 
         
         # Evaluo cada individuo y le asigno el error
+        log_time("Filtrado dEWMA")
         for ind in range(len(poblacion_actual)):
             #Aplicar  filtro a los tipitos
             [salida_filtro, Ns] =  run_test(poblacion_actual[ind], datos_orig, Nmin, Nmax)
@@ -208,7 +209,7 @@ for corrida in range(corridas_totales):
                 agujero_techo = salida_filtro[ind]                  #Guardo surespuesta al filtro
                 crec_superman = Ns                                  #Guardo su evolucion de Ns
                 error_superman = error_actual                       #Guardo el error para ver si sigue siendo superman
-
+        log_time("Filtrado dEWMA")
            
         #Para ploteo de errores minimo y maximo
         error_min[gen] = error_minimo
