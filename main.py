@@ -9,7 +9,7 @@ import statistics
 from fun_sys import run_test, gen_signal, add_noise, score_pob
 from fun_sys import FiltroFIR, FiltroEWMA
 from fun_log import log_clear, log_ind, log_ind_csv, log_time, plot_error, plot_best_ind, plot_clear
-from fun_gen import seleccion, mutacion, cruza
+from fun_gen import seleccion, mutacion, mutacion_rnd, cruza
 #from fun_log save_ind, load_data, plot_filtrados, plot_error, plot_comparacion, plot_best_indN, plot_in_out
 
 
@@ -18,17 +18,17 @@ PUNTUACION_MAXIMA = 100
 
 # Parametros del GA ----------------------------------------------------------------------------------------------------------------------
 nGen = 40                    #Generaciones a correr
-pDim = 100                     #Tamaño de la poblacion
+pDim = 80                     #Tamaño de la poblacion
 pMuta = 3                     #Probabilidad de que un individuo mute expresade en %
 dMuta = 50                    #delta de Muta, osea cuanto puede variar en la mutacion expresado en %
 pCruza = 40                   #probabilidad de cruza porcentual
 
-corridas_totales = 10
+corridas_totales = 20
 
 
 # Parametros del dEWMA -------------------------------------------------------------------------------------------------------------------
-lim_gamma = [1.001, 10]
-lim_alfa = [1.001, 10]
+lim_gamma = [1.001, 3]
+lim_alfa = [1.001, 3]
 lim_sigma = [0.5, 8]
 Nmax = 200
 Nmin = 5
@@ -237,7 +237,8 @@ for corrida in range(corridas_totales):
         
         #Mutacion
         log_time("Mutacion")
-        poblacion_actual= mutacion(poblacion_actual,pMuta,dMuta)
+        #poblacion_actual= mutacion(poblacion_actual,pMuta,dMuta)
+        poblacion_actual= mutacion_rnd(poblacion_actual,pMuta)
         log_time("Mutacion")
 
     log_ind(superman,gen_superman,corrida)

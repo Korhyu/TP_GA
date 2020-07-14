@@ -67,7 +67,7 @@ def FiltrodEWMA(param, data, Nmin, Nmax):
     dEWMA = np.array([variable[0]])
     Ns = [N]
     for j in range(1,len(variable)):
-        #sigma = 2 * (dEWMA[j-1])**(1/2)
+        sigma = 2 * (dEWMA[j-1])**(1/2)
         #sigma = 2 * (abs(dEWMA[j-1]))**(1/2)
         #sigma = sigma / (2 * (dEWMA[j-1])**(1/2))
         error = abs(variable[j]-dEWMA[j-1])
@@ -88,13 +88,7 @@ def FiltrodEWMA(param, data, Nmin, Nmax):
     #param[0] = N
     #param[1] = gama
     #param[2] = alfa
-    #param[3] = sigma
-
-    #plt.ylabel('Valor')
-    #plt.xlabel('Muestras')
-    #plt.title('Evol de Ns')
-    #plt.plot(Ns)
-    #plt.show()
+    param[3] = sigma
 
 
     return [dEWMA, np.array(Ns)]
@@ -157,31 +151,3 @@ def score_pob(poblacion, error_maximo, error_minimo):
             pass
 
     return poblacion
-
-
-
-
-"""
-def score_pob(poblacion, error_maximo, error_minimo):
-    #Esta funcion deberia tomar el error de la funcion eval_test y asignar un puntaje 
-
-    delta_error = error_maximo - error_minimo
-    total = 0
-
-    #Normalizacion
-    for ind in range(len(poblacion)):
-        #En la ultima columna se almacena el error
-        mod = (poblacion[ind][-1] - error_minimo) / delta_error
-        #poblacion[ind][-1]= 1 * (mod**2)     #Relacion Exponencial 1
-        poblacion[ind][-1]= mod                 #Relacion Lineal 1
-        total = total + mod
-        
-    poblacion[ind][-1] /= total
-
-    for ind+1 in range(len(poblacion)-1):
-        poblacion[ind][-1] = poblacion[ind-1][-1] + poblacion[ind][-1]
-
-    poblacion = np.array(sorted(poblacion, key=lambda a_entry: a_entry[-1]))
-
-    return poblacion
-    """

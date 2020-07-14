@@ -60,7 +60,7 @@ def mutacion(oPob,pMuta,dMuta):
     min_muta=1-(dMuta/100) #culculo de maxima mutacion hacia abajo dMuta=taza de mutacion
     #print('Max muta',max_muta, 'y Min Muta', min_muta)
     for total in range(len(oPob[:,0])):
-        for param in range(len(oPob[0,:]-1)):
+        for param in range(len(oPob[0,:])-1):
             if pMuta > (random.randrange(0, 1000, 1))/10: #avanzo por todos los parametros y segun la probabilidad de muta se eligen
                 cuenta=cuenta+1                
                 if param == 0 :
@@ -73,8 +73,19 @@ def mutacion(oPob,pMuta,dMuta):
 
 
 
+def mutacion_rnd(oPob,pMuta):
+    #Funcion que recorre la poblacion futura y genera la mutacion en los individuos
+    from main import param_rand
 
-
+    aux = np.copy(oPob) #auxiliar para la poblacion
+    cuenta=0
+    for total in range(len(oPob[:,0])):
+        for param in range(len(oPob[0,:])-1):
+            if pMuta > (random.randrange(0, 1000, 1))/10: #avanzo por todos los parametros y segun la probabilidad de muta se eligen
+                cuenta=cuenta+1                
+                aux[total, param] = param_rand()[param]        
+    #print('Cantidad de parametros mutados', cuenta)
+    return aux
 
 
 
