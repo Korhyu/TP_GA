@@ -11,10 +11,10 @@ def seleccion(poblacion_actual): #Recibo la los parametros del filtro (poblacion
         for aux in range(int(len(poblacion_actual[:,0]))-1,0,-1):
             
             if rd > poblacion_actual[aux,4]:
-                if aux == 0:
+                if aux == int(len(poblacion_actual[:,0]))-1:
                     pob_sel[pob,:]=poblacion_actual[aux,:]
                 else:
-                    pob_sel[pob,:]=poblacion_actual[aux-1,:]
+                    pob_sel[pob,:]=poblacion_actual[aux+1,:]
                 break
       
     return pob_sel

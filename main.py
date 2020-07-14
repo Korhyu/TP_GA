@@ -18,7 +18,7 @@ PUNTUACION_MAXIMA = 100
 
 # Parametros del GA ----------------------------------------------------------------------------------------------------------------------
 nGen = 40                    #Generaciones a correr
-pDim = 40                     #Tamaño de la poblacion
+pDim = 100                     #Tamaño de la poblacion
 pMuta = 3                     #Probabilidad de que un individuo mute expresade en %
 dMuta = 50                    #delta de Muta, osea cuanto puede variar en la mutacion expresado en %
 pCruza = 40                   #probabilidad de cruza porcentual
