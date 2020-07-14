@@ -138,22 +138,50 @@ def score_pob(poblacion, error_maximo, error_minimo):
     #Esta funcion deberia tomar el error de la funcion eval_test y asignar un puntaje 
 
     delta_error = error_maximo - error_minimo
+    total = 0
 
+    #Normalizacion
     for ind in range(len(poblacion)):
         #En la ultima columna se almacena el error
         mod = (poblacion[ind][-1] - error_minimo) / delta_error
-        poblacion[ind][-1]= 1 * (mod**2)     #Relacion Exponencial 1
+        #poblacion[ind][-1]= 1 * (mod**2)     #Relacion Exponencial 1
+        poblacion[ind][-1]= mod                 #Relacion Lineal 1
+        total = total + mod
         
-        #if mod > 0.000001 :
-        #    poblacion[ind,-1]= 1 * (mod**2)     #Relacion Exponencial 1
-        #else:
-        #    poblacion[ind,-1]= 0.000001
-        
-        #error_punt[ind,1]= PUNTUACION_MAXIMA * (error_punt[ind,0] - error_minimo) / delta_error             #Relacion Exponencial 2
-        #error_punt[ind,1]= PUNTUACION_MAXIMA - (error_punt[ind,0] * PUNTUACION_MAXIMA / error_maximo)       #Relacion lineal 1
-        #if  error_punt[ind,1] < 0 :
-        #    error_punt[ind,1]=0
+    poblacion[:,-1] /= total
+
+    for ind in range(len(poblacion)-1):
+        if ind > 0:
+            poblacion[ind][-1] = poblacion[ind-1][-1] + poblacion[ind][-1]
+        else:
+            pass
 
     poblacion = np.array(sorted(poblacion, key=lambda a_entry: a_entry[-1]))
 
     return poblacion
+
+
+"""
+def score_pob(poblacion, error_maximo, error_minimo):
+    #Esta funcion deberia tomar el error de la funcion eval_test y asignar un puntaje 
+
+    delta_error = error_maximo - error_minimo
+    total = 0
+
+    #Normalizacion
+    for ind in range(len(poblacion)):
+        #En la ultima columna se almacena el error
+        mod = (poblacion[ind][-1] - error_minimo) / delta_error
+        #poblacion[ind][-1]= 1 * (mod**2)     #Relacion Exponencial 1
+        poblacion[ind][-1]= mod                 #Relacion Lineal 1
+        total = total + mod
+        
+    poblacion[ind][-1] /= total
+
+    for ind+1 in range(len(poblacion)-1):
+        poblacion[ind][-1] = poblacion[ind-1][-1] + poblacion[ind][-1]
+
+    poblacion = np.array(sorted(poblacion, key=lambda a_entry: a_entry[-1]))
+
+    return poblacion
+    """

@@ -29,7 +29,7 @@ corridas_totales = 10
 # Parametros del dEWMA -------------------------------------------------------------------------------------------------------------------
 lim_gamma = [0.5, 40]
 lim_alfa = [1, 30]
-lim_sigma = [4, 8]             #Actualmente no se utiliza y el filtro calcula su sigma propio
+lim_sigma = [0.5, 8]
 Nmax = 200
 Nmin = 5
 lim_N = [Nmin, Nmax]
@@ -110,7 +110,7 @@ def eval_salida(pura, filtrada):
 
     for i in range(len(filtrada)):
         errores_parciales.append((pura[i]-filtrada[i]) ** 2)
-
+        
     err = sum(errores_parciales) / len(filtrada)
 
     return err
