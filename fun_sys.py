@@ -143,22 +143,22 @@ def score_pob(poblacion, error_maximo, error_minimo):
     #Normalizacion
     for ind in range(len(poblacion)):
         #En la ultima columna se almacena el error
-        mod = (poblacion[ind][-1] - error_minimo) / delta_error
-        #poblacion[ind][-1]= 1 * (mod**2)     #Relacion Exponencial 1
-        poblacion[ind][-1]= mod                 #Relacion Lineal 1
-        total = total + mod
-        
+        poblacion[ind][-1] = 1 - (poblacion[ind][-1] - error_minimo) / delta_error
+        total = total + poblacion[ind][-1]
+
     poblacion[:,-1] /= total
 
-    for ind in range(len(poblacion)-1):
+    poblacion = np.array(sorted(poblacion, key=lambda a_entry: a_entry[-1]))
+
+    for ind in range(len(poblacion)):
         if ind > 0:
             poblacion[ind][-1] = poblacion[ind-1][-1] + poblacion[ind][-1]
         else:
             pass
 
-    poblacion = np.array(sorted(poblacion, key=lambda a_entry: a_entry[-1]))
-
     return poblacion
+
+
 
 
 """
