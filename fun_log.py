@@ -67,7 +67,7 @@ def log_time (funcion):
 
     global tiempo_pas
 
-    if tiempo_pas is 0:
+    if tiempo_pas == 0:
         tiempo_pas = time.time()
     
     else:
@@ -78,28 +78,6 @@ def log_time (funcion):
             fieldnames = ['Funcion', 'Tiempo_ms']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writerow({fieldnames[0]: funcion, fieldnames[1]: tiempo_act})
-
-    
-    """
-    if funcion in [funciones[0] for funciones in funciones]:
-        #El elemento ya se ingreso en la lista y debo sacar el tiempo total
-        tiempo_act = time.time()
-        indice = funciones.index()
-        tiempo_pas = funciones[indice, 1]
-        funciones.remove(funcion)
-        
-        #Guardo el log
-        with open(log_funciones, "a") as file:
-            fieldnames = ['Funcion', 'Tiempo_ms']
-            writer = csv.DictWriter(file, fieldnames=fieldnames)
-            writer.writerow({fieldnames[0]: funcion, fieldnames[1]: time2-time1})
-
-
-    else:
-        fun = [funcion , time.time()]
-        funciones.append(fun)
-    """
-
     
 
 

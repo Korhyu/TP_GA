@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 
 from fun_log import log_time
 
+
+
 def gen_signal(amp, per, fases, muestras):
     # Recibe las amplitudes, periodos y fases como vectores y el numero de muestras es un int.
     # devuelve la señal como suma de todos los senos usando los parametros antes dados.
@@ -33,6 +35,12 @@ def gen_signal(amp, per, fases, muestras):
 
     return st
 
+
+def load_superman():
+    #Carga la poblacion de supermans dejada por las corridas anteriores
+
+
+    pass
 
 def add_noise(amp, s):
     #Agrega ruido aleatorio de amplitud especificada
@@ -88,7 +96,7 @@ def FiltrodEWMA(param, data, Nmin, Nmax):
     #param[0] = N
     #param[1] = gama
     #param[2] = alfa
-    param[3] = sigma
+    #param[3] = sigma
 
 
     return [dEWMA, np.array(Ns)]
@@ -138,7 +146,6 @@ def score_pob(poblacion, error_maximo, error_minimo):
     for ind in range(len(poblacion)):
         #En la ultima columna se almacena el error
         poblacion[ind][-1] = (1 - (poblacion[ind][-1] / error_maximo))**2
-        # poblacion[ind][-1] = 1 - (poblacion[ind][-1] - error_minimo) / delta_error
         total = total + poblacion[ind][-1]
 
     poblacion[:,-1] /= total

@@ -14,11 +14,9 @@ from fun_gen import seleccion, mutacion, mutacion_rnd, cruza
 
 
 
-PUNTUACION_MAXIMA = 100
-
 # Parametros del GA ----------------------------------------------------------------------------------------------------------------------
-nGen = 100                    #Generaciones a correr
-pDim = 80                     #Tamaño de la poblacion
+nGen = 40                    #Generaciones a correr
+pDim = 50                     #Tamaño de la poblacion
 pMuta = 3                     #Probabilidad de que un individuo mute expresade en %
 dMuta = 50                    #delta de Muta, osea cuanto puede variar en la mutacion expresado en %
 pCruza = 4                    #probabilidad de cruza porcentual
@@ -27,10 +25,10 @@ corridas_totales = 20
 
 
 # Parametros del dEWMA -------------------------------------------------------------------------------------------------------------------
-lim_gamma = [1.001, 40]
-lim_alfa = [1.001, 30]
-lim_sigma = [0.5, 20]
-Nmax = 200
+lim_alfa = [1.01, 2.5]
+lim_gamma = [1.01, 4.5]
+lim_sigma = [2, 4]
+Nmax = 60
 Nmin = 5
 lim_N = [Nmin, Nmax]
 
@@ -44,7 +42,7 @@ lim_N = [Nmin, Nmax]
 amp = [20, 10, 15]              #Amplitudes de cada tono
 per = [400, 250, 530]           #Periodos de cada tono
 fase = [0, 0.78, 1.57]          #Fases de cada tono
-muestras = 1000                 #Tamaño de la señal total
+muestras = 2000                 #Tamaño de la señal total
 
 amp_noise = 6                  #Amplitud del ruido
 
@@ -123,125 +121,127 @@ def eval_salida(pura, filtrada):
 
 
 
-
-
-
-
-
 # main ---------------------------------------------------------------------------------------------------------------------------
+def main():
 
-#Limpio de una posible corrida anterior
-plot_clear()
-log_clear()
-
-
-# Generacion de datos --------------------------------------------------------------------------------------
-#datos_orig = load_data()                           #Obtengo los datos de contagio
-datos_puros = gen_signal(amp, per, fase, muestras)  #Genero la señal de prueba
-datos_orig = add_noise(amp_noise, datos_puros)
-    
-filtrada_FIR = FiltroFIR(eq_FIR, datos_orig)        #Filtradas de comparacion
-filtrada_EWMA = FiltroEWMA(eq_EWMA, datos_orig)
-
-error_FIR = eval_salida(datos_puros, filtrada_FIR[0])           
-error_EWMA = eval_salida(datos_puros, filtrada_EWMA[0])
-# -----------------------------------------------------------------------------------------------------------
+    #Limpio de una posible corrida anterior
+    plot_clear()
+    log_clear()
 
 
-# Lazo de corridas ----------
-print('Se van a realizar',corridas_totales,'corridas totales')
-for corrida in range(corridas_totales):
-    print('Corrida numero',corrida,'de',corridas_totales)
+    # Generacion de datos --------------------------------------------------------------------------------------
+    #datos_orig = load_data()                           #Obtengo los datos de contagio
+    datos_puros = gen_signal(amp, per, fase, muestras)  #Genero la señal de prueba
+    datos_orig = add_noise(amp_noise, datos_puros)
+        
+    filtrada_FIR = FiltroFIR(eq_FIR, datos_orig)        #Filtradas de comparacion
+    filtrada_EWMA = FiltroEWMA(eq_EWMA, datos_orig)
 
-    
-    # Variables auxiliares ----------------------------------------------------------------------------------------------------------------------
-    #poblacion_actual = []           #Array con la poblacion actual 
-    #poblacion_nueva = []            #Array donde se van volcando los individuos de la proxima poblacion
-    salida_filtro = []              #Array de las salidas del filtro con cada set de parametros
-    evol_error_medio = []  
-    error_max = np.zeros(nGen)      #Evolucion del error en funcion de las generaciones
-    error_min = np.zeros(nGen)
-    error_med = np.zeros(nGen)
-    error_minomorum = np.zeros(nGen)
+    error_FIR = eval_salida(datos_puros, filtrada_FIR[0])           
+    error_EWMA = eval_salida(datos_puros, filtrada_EWMA[0])
+    # -----------------------------------------------------------------------------------------------------------
 
-    error_superman = 10000          #Error del mejor individuo de todas las generaciones
 
-    # Generacion de la poblacion   
-    poblacion_actual = create_pop(pDim)
-
-    #Lazo de generaciones -------------------------------
-    for gen in range(nGen):
-        print('Generacion ',gen, 'de ', nGen)
-
-        poblacion_nueva = []                            #Reinicio la poblacion nueva
-    
-        error_minimo = 10000                            #Maximizo el minimo para encontrar el primer minimo de la poblacion
-        error_maximo = 0                                #Minimizo el maximo para encontrar el primer maximo de la poblacion
-        error_promedio_gen = 0                          #Vuelvo a 0 los valores de la generacion
-        ind_minimo_err = 0
-        ind_maximo_err = 0
+    # Lazo de corridas ----------
+    print('Se van a realizar',corridas_totales,'corridas totales')
+    for corrida in range(corridas_totales):
+        print('Corrida numero',corrida,'de',corridas_totales)
 
         
-        # Evaluo cada individuo y le asigno el error
-        log_time("Filtrado dEWMA")
-        for ind in range(len(poblacion_actual)):
-            #Aplicar  filtro a los tipitos
-            [salida_filtro, Ns] =  run_test(poblacion_actual[ind], datos_orig, Nmin, Nmax)
-    
-            #Evaluacion de la salida del filtro
-            error_actual = eval_salida(datos_puros, salida_filtro)
-            poblacion_actual[ind][-1] = error_actual                 #Cargo el error en la ultima columna de la poblacion
-            error_promedio_gen = error_promedio_gen + error_actual
+        # Variables auxiliares ----------------------------------------------------------------------------------------------------------------------
+        #poblacion_actual = []           #Array con la poblacion actual 
+        #poblacion_nueva = []            #Array donde se van volcando los individuos de la proxima poblacion
+        salida_filtro = []              #Array de las salidas del filtro con cada set de parametros
+        evol_error_medio = []  
+        error_max = np.zeros(nGen)      #Evolucion del error en funcion de las generaciones
+        error_min = np.zeros(nGen)
+        error_med = np.zeros(nGen)
+        error_minomorum = np.zeros(nGen)
 
-            #Busco el error minimo de la generacion
-            if error_actual < error_minimo:
-                error_minimo = error_actual
-                ind_minimo_err = ind
-                error_min[gen]=error_actual
+        error_superman = 10000          #Error del mejor individuo de todas las generaciones
 
-            #Busco el error maximo de la generacion
-            if error_actual > error_maximo:
-                error_maximo = error_actual
-                ind_maximo_err = ind
-                
-            #Descubriendo a Superman
-            if error_superman > error_minimo:
-                gen_superman = gen
-                superman = poblacion_actual[ind]                    #Guardo los parametros
-                agujero_techo = salida_filtro[ind]                  #Guardo surespuesta al filtro
-                crec_superman = Ns                                  #Guardo su evolucion de Ns
-                error_superman = error_actual                       #Guardo el error para ver si sigue siendo superman
-        log_time("Filtrado dEWMA")
-           
-        #Para ploteo de errores minimo y maximo
-        error_min[gen] = error_minimo
-        error_max[gen] = error_maximo
-        error_minomorum[gen] = error_superman
+        # Generacion de la poblacion   
+        poblacion_actual = create_pop(pDim)
 
-        #Calculo el error promedio de la generacion
-        error_promedio_gen = error_promedio_gen / len(poblacion_actual)
-        error_med[gen] = error_promedio_gen
+        #Lazo de generaciones -------------------------------
+        for gen in range(nGen):
+            print('Generacion ',gen, 'de ', nGen)
+
+            poblacion_nueva = []                            #Reinicio la poblacion nueva
         
-        #Asignacion de puntajes
-        poblacion_actual = score_pob(poblacion_actual, error_maximo, error_minimo)
+            error_minimo = 10000                            #Maximizo el minimo para encontrar el primer minimo de la poblacion
+            error_maximo = 0                                #Minimizo el maximo para encontrar el primer maximo de la poblacion
+            error_promedio_gen = 0                          #Vuelvo a 0 los valores de la generacion
+            ind_minimo_err = 0
+            ind_maximo_err = 0
 
-        #Seleccion
-        log_time("Seleccion")
-        poblacion_actual= seleccion(poblacion_actual)
-        log_time("Seleccion")
-
-        #Cruza
-        log_time("Cruza")
-        poblacion_actual= cruza(poblacion_actual,pCruza)
-        log_time("Cruza")
+            
+            # Evaluo cada individuo y le asigno el error
+            log_time("Filtrado dEWMA")
+            for ind in range(len(poblacion_actual)):
+                #Aplicar  filtro a los tipitos
+                [salida_filtro, Ns] =  run_test(poblacion_actual[ind], datos_orig, Nmin, Nmax)
         
-        #Mutacion
-        log_time("Mutacion")
-        #poblacion_actual= mutacion(poblacion_actual,pMuta,dMuta)
-        poblacion_actual= mutacion_rnd(poblacion_actual,pMuta)
-        log_time("Mutacion")
+                #Evaluacion de la salida del filtro
+                error_actual = eval_salida(datos_puros, salida_filtro)
+                poblacion_actual[ind][-1] = error_actual                 #Cargo el error en la ultima columna de la poblacion
+                error_promedio_gen = error_promedio_gen + error_actual
 
-    log_ind(superman,gen_superman,corrida)
-    log_ind_csv(superman, corrida)
-    plot_error(error_min, error_max, error_med, error_minomorum, error_FIR, error_EWMA, corrida)
-    plot_best_ind(datos_puros, crec_superman, corrida)
+                #Busco el error minimo de la generacion
+                if error_actual < error_minimo:
+                    error_minimo = error_actual
+                    ind_minimo_err = ind
+                    error_min[gen]=error_actual
+
+                #Busco el error maximo de la generacion
+                if error_actual > error_maximo:
+                    error_maximo = error_actual
+                    ind_maximo_err = ind
+                    
+                #Descubriendo a Superman
+                if error_superman > error_minimo:
+                    gen_superman = gen
+                    superman = poblacion_actual[ind]                    #Guardo los parametros
+                    agujero_techo = salida_filtro[ind]                  #Guardo surespuesta al filtro
+                    crec_superman = Ns                                  #Guardo su evolucion de Ns
+                    error_superman = error_actual                       #Guardo el error para ver si sigue siendo superman
+            log_time("Filtrado dEWMA")
+            
+            #Para ploteo de errores minimo y maximo
+            error_min[gen] = error_minimo
+            error_max[gen] = error_maximo
+            error_minomorum[gen] = error_superman
+
+            #Calculo el error promedio de la generacion
+            error_promedio_gen = error_promedio_gen / len(poblacion_actual)
+            error_med[gen] = error_promedio_gen
+            
+            #Asignacion de puntajes
+            poblacion_actual = score_pob(poblacion_actual, error_maximo, error_minimo)
+
+            #Seleccion
+            log_time("Seleccion")
+            poblacion_actual= seleccion(poblacion_actual)
+            log_time("Seleccion")
+
+            #Cruza
+            log_time("Cruza")
+            poblacion_actual= cruza(poblacion_actual,pCruza)
+            log_time("Cruza")
+            
+            #Mutacion
+            log_time("Mutacion")
+            #poblacion_actual= mutacion(poblacion_actual,pMuta,dMuta)
+            poblacion_actual= mutacion_rnd(poblacion_actual,pMuta)
+            log_time("Mutacion")
+
+        log_ind(superman,gen_superman,corrida)
+        log_ind_csv(superman, corrida)
+        plot_error(error_min, error_max, error_med, error_minomorum, error_FIR, error_EWMA, corrida)
+        plot_best_ind(datos_puros, crec_superman, corrida)
+
+
+
+
+if __name__ == '__main__':
+    main()
