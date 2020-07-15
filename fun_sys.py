@@ -67,7 +67,7 @@ def FiltrodEWMA(param, data, Nmin, Nmax):
     dEWMA = np.array([variable[0]])
     Ns = [N]
     for j in range(1,len(variable)):
-        sigma = 2 * (dEWMA[j-1])**(1/2)
+        #sigma = 2 * (dEWMA[j-1])**(1/2)
         #sigma = 2 * (abs(dEWMA[j-1]))**(1/2)
         #sigma = sigma / (2 * (dEWMA[j-1])**(1/2))
         error = abs(variable[j]-dEWMA[j-1])
@@ -131,13 +131,14 @@ def run_test(param, data, Nmin, Nmax):
 def score_pob(poblacion, error_maximo, error_minimo):
     #Esta funcion deberia tomar el error de la funcion eval_test y asignar un puntaje 
 
-    delta_error = error_maximo - error_minimo
+    # delta_error = error_maximo - error_minimo
     total = 0
 
     #Normalizacion
     for ind in range(len(poblacion)):
         #En la ultima columna se almacena el error
-        poblacion[ind][-1] = 1 - (poblacion[ind][-1] - error_minimo) / delta_error
+        poblacion[ind][-1] = (1 - (poblacion[ind][-1] / error_maximo))**2
+        # poblacion[ind][-1] = 1 - (poblacion[ind][-1] - error_minimo) / delta_error
         total = total + poblacion[ind][-1]
 
     poblacion[:,-1] /= total
@@ -149,5 +150,5 @@ def score_pob(poblacion, error_maximo, error_minimo):
             poblacion[ind][-1] = poblacion[ind-1][-1] + poblacion[ind][-1]
         else:
             pass
-
+    # poblacion=np.power(poblacion[:,4],2)
     return poblacion

@@ -17,19 +17,19 @@ from fun_gen import seleccion, mutacion, mutacion_rnd, cruza
 PUNTUACION_MAXIMA = 100
 
 # Parametros del GA ----------------------------------------------------------------------------------------------------------------------
-nGen = 40                    #Generaciones a correr
+nGen = 100                    #Generaciones a correr
 pDim = 80                     #Tamaño de la poblacion
 pMuta = 3                     #Probabilidad de que un individuo mute expresade en %
 dMuta = 50                    #delta de Muta, osea cuanto puede variar en la mutacion expresado en %
-pCruza = 40                   #probabilidad de cruza porcentual
+pCruza = 4                    #probabilidad de cruza porcentual
 
 corridas_totales = 20
 
 
 # Parametros del dEWMA -------------------------------------------------------------------------------------------------------------------
-lim_gamma = [1.001, 3]
-lim_alfa = [1.001, 3]
-lim_sigma = [0.5, 8]
+lim_gamma = [1.001, 40]
+lim_alfa = [1.001, 30]
+lim_sigma = [0.5, 20]
 Nmax = 200
 Nmin = 5
 lim_N = [Nmin, Nmax]
@@ -44,7 +44,7 @@ lim_N = [Nmin, Nmax]
 amp = [20, 10, 15]              #Amplitudes de cada tono
 per = [400, 250, 530]           #Periodos de cada tono
 fase = [0, 0.78, 1.57]          #Fases de cada tono
-muestras = 2000                 #Tamaño de la señal total
+muestras = 1000                 #Tamaño de la señal total
 
 amp_noise = 6                  #Amplitud del ruido
 
