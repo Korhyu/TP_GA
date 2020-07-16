@@ -8,18 +8,18 @@ import statistics
 #from fun_GA import select_ind, mate_ind,mutac_ind, buscarnegativos
 from fun_sys import run_test, gen_signal, add_noise, score_pob
 from fun_sys import FiltroFIR, FiltroEWMA
-from fun_log import log_clear, log_ind, log_ind_csv, log_time, plot_error, plot_best_ind, plot_clear
+from fun_log import log_clear, log_ind, log_ind_csv, log_time, plot_error, plot_best_ind, plot_clear, plot_comparacion, plot_comparacion_triple
 from fun_gen import seleccion, mutacion, mutacion_rnd, cruza
 #from fun_log save_ind, load_data, plot_filtrados, plot_error, plot_comparacion, plot_best_indN, plot_in_out
 
 
 
 # Parametros del GA ----------------------------------------------------------------------------------------------------------------------
-nGen = 40                    #Generaciones a correr
+nGen = 100                    #Generaciones a correr
 pDim = 50                     #Tamaño de la poblacion
 pMuta = 3                     #Probabilidad de que un individuo mute expresade en %
+pCruza = 5                    #probabilidad de cruza porcentual
 dMuta = 50                    #delta de Muta, osea cuanto puede variar en la mutacion expresado en %
-pCruza = 4                    #probabilidad de cruza porcentual
 
 corridas_totales = 20
 
@@ -29,7 +29,7 @@ lim_alfa = [1.01, 2.5]
 lim_gamma = [1.01, 4.5]
 lim_sigma = [2, 4]
 Nmax = 60
-Nmin = 5
+Nmin = 4
 lim_N = [Nmin, Nmax]
 
 
@@ -202,7 +202,7 @@ def main():
                 if error_superman > error_minimo:
                     gen_superman = gen
                     superman = poblacion_actual[ind]                    #Guardo los parametros
-                    agujero_techo = salida_filtro[ind]                  #Guardo surespuesta al filtro
+                    agujero_techo = salida_filtro                       #Guardo surespuesta al filtro
                     crec_superman = Ns                                  #Guardo su evolucion de Ns
                     error_superman = error_actual                       #Guardo el error para ver si sigue siendo superman
             log_time("Filtrado dEWMA")
@@ -239,7 +239,17 @@ def main():
         log_ind_csv(superman, corrida)
         plot_error(error_min, error_max, error_med, error_minomorum, error_FIR, error_EWMA, corrida)
         plot_best_ind(datos_puros, crec_superman, corrida)
+        plot_best_ind(datos_puros, crec_superman, corrida, [1400, 1800])
 
+    plot_comparacion(datos_orig, datos_puros, filtrada_FIR[0], "FIR")
+    plot_comparacion(datos_orig, datos_puros, filtrada_EWMA[0], "EWMA")
+    plot_comparacion(datos_orig, datos_puros, agujero_techo, "dEWMA")
+
+    plot_comparacion(datos_orig, datos_puros, filtrada_FIR[0], "FIR parcial", [1400, 1800])
+    plot_comparacion(datos_orig, datos_puros, filtrada_EWMA[0], "EWMA parcial", [1400, 1800])
+    plot_comparacion(datos_orig, datos_puros, agujero_techo, "dEWMA parcial", [1400, 1800])
+
+    plot_comparacion_triple(agujero_techo, filtrada_FIR[0], filtrada_EWMA[0], datos_puros, [1400, 1800])
 
 
 

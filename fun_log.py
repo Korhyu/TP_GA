@@ -127,7 +127,7 @@ def plot_error(error_min, error_max, error_medio, error_super, error_FIR, error_
 
 
 
-def plot_best_ind (signal, Ns, corrida):
+def plot_best_ind (signal, Ns, corrida, vent = None):
     #Plotea la señal de salida del mejor individuo junto con la evolucion del N del mismo
 
     #Eje izquierdo
@@ -135,15 +135,28 @@ def plot_best_ind (signal, Ns, corrida):
     color = 'tab:red'
     ax1.set_xlabel('Muestras')
     ax1.set_ylabel('N [muestras]', color=color)
-    ax1.plot(Ns, color=color)
-    ax1.tick_params(axis='y', labelcolor=color)
+
+    if vent is None:
+        ax1.plot(Ns, color=color)
+        ax1.tick_params(axis='y', labelcolor=color)
+    else:
+        ax1.plot(Ns[vent[0] : vent[1]], color=color)
+        ax1.tick_params(axis='y', labelcolor=color)
 
     #Eje derecho
     ax2 = ax1.twinx()                               # instantiate a second axes that shares the same x-axis
     color = 'tab:blue'
     ax2.set_ylabel('Señal Entrada', color=color)    # we already handled the x-label with ax1
-    ax2.plot(signal, color=color)
-    ax2.tick_params(axis='y', labelcolor=color)
+    
+    if vent is None:
+        ax2.plot(signal, color=color)
+        ax2.tick_params(axis='y', labelcolor=color)
+        img_file = "Imagenes/Superman_" + str(corrida) + ".png"
+    else:
+        ax2.plot(signal[vent[0] : vent[1]], color=color)
+        ax2.tick_params(axis='y', labelcolor=color)
+        img_file = "Imagenes/Superman_" + str(corrida) + "_vent.png"
+
     
 
     fig.tight_layout()                              # otherwise the right y-label is slightly clipped
@@ -151,9 +164,7 @@ def plot_best_ind (signal, Ns, corrida):
     #plt.figure(figsize=(12,10))
 
 
-    img_file = "Imagenes/Superman_" + str(corrida) + ".png"
     plt.grid(True)
-    #plt.show()
     plt.savefig(img_file)
     plt.close()
 
@@ -173,4 +184,57 @@ def plot_in_out (signal, out, filtro):
     plt.legend(loc=4)
     plt.savefig(archivo)
     plt.grid(True)
+    plt.close()
+
+
+def plot_comparacion (original, pura, filtrada, nombre_filtro, vent = None):
+
+    titulo = "Rendimiento filtro " + str(nombre_filtro)
+    archivo = "Imagenes/Comparacion_" + nombre_filtro + ".png"
+
+    fig = plt.figure(figsize=(12,6))
+    plt.ylabel('Valor')
+    plt.xlabel('Muestras')
+
+    if vent is None:
+        #plt.plot(original, label = "Entrada a filtro")
+        plt.plot(pura, label = "Señal pura")
+        plt.plot(filtrada, label = "Salida del filtro")
+    else:
+        #plt.plot(original[vent[0], vent[1]], label = "Entrada a filtro")
+        plt.plot(pura[vent[0] : vent[1]], label = "Señal pura")
+        plt.plot(filtrada[vent[0] : vent[1]], label = "Salida del filtro")
+    
+    plt.title(titulo)
+    plt.legend(loc=1)
+    plt.grid(True)
+    plt.savefig(archivo)
+    plt.close()
+
+
+def plot_comparacion_triple (filtro_dEWMA, filtro_FIR, filtro_EWMA, pura, vent = None):
+
+    titulo = "Comparacion entre filtros"
+    archivo = "Imagenes/Comparacion_Triple.png"
+
+    fig = plt.figure(figsize=(12,6))
+    plt.ylabel('Valor')
+    plt.xlabel('Muestras')
+
+    if vent is None:
+        plt.plot(pura, label = "Señal Pura")
+        plt.plot(filtro_dEWMA, label = "dEWMA")
+        plt.plot(filtro_FIR, label = "FIR")
+        plt.plot(filtro_EWMA, label = "EWMA")
+    else:
+        plt.plot(pura[vent[0] : vent[1]], label = "Señal Pura")
+        plt.plot(filtro_dEWMA[vent[0] : vent[1]], label = "dEWMA")
+        plt.plot(filtro_FIR[vent[0] : vent[1]], label = "FIR")
+        plt.plot(filtro_EWMA[vent[0] : vent[1]], label = "EWMA")
+
+    
+    plt.title(titulo)
+    plt.legend(loc=1)
+    plt.grid(True)
+    plt.savefig(archivo)
     plt.close()
