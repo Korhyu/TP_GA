@@ -15,13 +15,13 @@ from fun_gen import seleccion, mutacion, mutacion_rnd, cruza
 
 
 # Parametros del GA ----------------------------------------------------------------------------------------------------------------------
-nGen = 100                    #Generaciones a correr
+nGen = 50                   #Generaciones a correr
 pDim = 50                     #Tamaño de la poblacion
-pMuta = 3                     #Probabilidad de que un individuo mute expresade en %
-pCruza = 5                    #probabilidad de cruza porcentual
+pMuta = 2                     #Probabilidad de que un individuo mute expresade en %
+pCruza = 10                    #probabilidad de cruza porcentual
 dMuta = 50                    #delta de Muta, osea cuanto puede variar en la mutacion expresado en %
 
-corridas_totales = 20
+corridas_totales = 5
 
 
 # Parametros del dEWMA -------------------------------------------------------------------------------------------------------------------

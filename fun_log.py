@@ -197,11 +197,11 @@ def plot_comparacion (original, pura, filtrada, nombre_filtro, vent = None):
     plt.xlabel('Muestras')
 
     if vent is None:
-        #plt.plot(original, label = "Entrada a filtro")
+        plt.plot(original, label = "Entrada a filtro")
         plt.plot(pura, label = "Señal pura")
         plt.plot(filtrada, label = "Salida del filtro")
     else:
-        #plt.plot(original[vent[0], vent[1]], label = "Entrada a filtro")
+        plt.plot(original[vent[0] : vent[1]], label = "Entrada a filtro")
         plt.plot(pura[vent[0] : vent[1]], label = "Señal pura")
         plt.plot(filtrada[vent[0] : vent[1]], label = "Salida del filtro")
     
