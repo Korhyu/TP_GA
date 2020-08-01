@@ -15,9 +15,9 @@ from fun_gen import seleccion, mutacion, mutacion_rnd, cruza
 
 
 # Parametros del GA ----------------------------------------------------------------------------------------------------------------------
-nGen = 50                   #Generaciones a correr
+nGen = 100                   #Generaciones a correr
 pDim = 50                     #Tamaño de la poblacion
-pMuta = 2                     #Probabilidad de que un individuo mute expresade en %
+pMuta = 0.5                     #Probabilidad de que un individuo mute expresade en %
 pCruza = 10                    #probabilidad de cruza porcentual
 dMuta = 50                    #delta de Muta, osea cuanto puede variar en la mutacion expresado en %
 
@@ -25,11 +25,11 @@ corridas_totales = 5
 
 
 # Parametros del dEWMA -------------------------------------------------------------------------------------------------------------------
-lim_alfa = [1.01, 2.5]
-lim_gamma = [1.01, 4.5]
-lim_sigma = [2, 4]
-Nmax = 60
-Nmin = 4
+lim_alfa = [1.01, 5]
+lim_gamma = [1.01, 10]
+lim_sigma = [0.1, 4]
+Nmax = 50
+Nmin = 1
 lim_N = [Nmin, Nmax]
 
 
@@ -39,17 +39,28 @@ lim_N = [Nmin, Nmax]
 
 
 # Parametros de la señal de prueba -------------------------------------------------------------------------------------------------------
+amp = [10]              #Amplitudes de cada tono
+per = [600]           #Periodos de cada tono
+fase = [0]          #Fases de cada tono
+muestras = 2000                 #Tamaño de la señal total
+
+amp_noise = 0.5                  #Amplitud del ruido
+
+""" Originales
 amp = [20, 10, 15]              #Amplitudes de cada tono
 per = [400, 250, 530]           #Periodos de cada tono
 fase = [0, 0.78, 1.57]          #Fases de cada tono
-muestras = 2000                 #Tamaño de la señal total
 
-amp_noise = 6                  #Amplitud del ruido
+#"Trapezoide"
+amp = [-9.12, -2.28, 0, -0.57, -0.36]              #Amplitudes de cada tono
+per = [1000, 800, 250, 125, 62]           #Periodos de cada tono
+fase = [0.785, 0.785, 0.785, 0.785, 0.785]          #Fases de cada tono
+"""
 
 
 # Parametros de filtros de comparacion ---------------------------------------------------------------------------------------------------
-eq_FIR = 6                 #Valor N del filtro "equivalente" FIR
-eq_EWMA = 6                #Valor N del filtro "equivalente" EWMA
+eq_FIR = 10                 #Valor N del filtro "equivalente" FIR
+eq_EWMA = 10                #Valor N del filtro "equivalente" EWMA
 
 
 
@@ -103,10 +114,13 @@ def eval_salida(pura, filtrada):
     #comparando las 2 y haciendo la evaluacion (error cuadratico medio o error medio)
     #devuelve un valor como resultado de esa comparacion
     #quiza la suma de todos los errores o alguna otra metrica a considerar
+    #Se descarta el primer 5% de las muestras del vector por considerarse estabilizacion del filtro
 
     errores_parciales = []
+    largo_total = len(filtrada)
+    punto_inicial = round(largo_total * 0.05)
 
-    for i in range(len(filtrada)):
+    for i in range(punto_inicial, largo_total):
         errores_parciales.append((pura[i]-filtrada[i]) ** 2)
         
     err = sum(errores_parciales) / len(filtrada)
