@@ -13,7 +13,7 @@ log_csv = "Log/Individuos.csv"
 
 
 tiempo_pas = 0
-
+tiempo_inicio = 0
 
 
 def log_clear():
@@ -80,28 +80,35 @@ def log_time (funcion):
             writer.writerow({fieldnames[0]: funcion, fieldnames[1]: tiempo_act})
     
 
+def log_time_total ():
+    #funcion para registar el tiempo que demora la funcion
+
+    global tiempo_inicio
+
+    if tiempo_inicio == 0:
+        tiempo_inicio = time.time()
+    
+    else:
+        tiempo_act = time.time() - tiempo_inicio
+        tiempo_inicio = 0
+
+        with open(log_funciones, "a") as file:
+            fieldnames = ['Funcion', 'Tiempo_ms']
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writerow({fieldnames[0]: "Tiempo_Total", fieldnames[1]: tiempo_act})
+    
 
 
 def plot_error(error_min, error_max, error_medio, error_super, error_FIR, error_EWMA, corrida):
     #Ploteo la evolucion del error a lo largo de una generacion 
 
     plt.figure(figsize=(14, 10))
-
-    #Error medio y minimo
-    plt.subplot(311)
-    plt.plot(error_medio, label='Medio generacional')
-    plt.plot(error_min, label='Minimo generacional')
-    plt.ylabel('Error')
-    plt.xlabel('Generacion')
-    plt.grid(True)
-    plt.legend(loc=1)
-
-    
+   
     #Error minimo comparado con FIR y EWMA
-    plt.subplot(312)
+    plt.subplot(311)
     error_FIR = np.ones(len(error_min)) * error_FIR
     error_EWMA = np.ones(len(error_min)) * error_EWMA
-    plt.plot(error_min, label='Minimo generacional')
+    plt.plot(error_min, label='Minimo dEWMA')
     plt.plot(error_FIR, label='Filtro FIR')
     plt.plot(error_EWMA, label='Filtro EWMA')
     plt.ylabel('Error')
@@ -109,6 +116,14 @@ def plot_error(error_min, error_max, error_medio, error_super, error_FIR, error_
     plt.grid(True)
     plt.legend(loc=1)
 
+    #Error medio y minimo
+    plt.subplot(312)
+    plt.plot(error_min, label='Minimo generacional')
+    plt.plot(error_medio, label='Medio generacional')
+    plt.ylabel('Error')
+    plt.xlabel('Generacion')
+    plt.grid(True)
+    plt.legend(loc=1)
 
     #Comparacion error minimo y error superman
     plt.subplot(313) 
@@ -155,6 +170,7 @@ def plot_best_ind (signal, Ns, corrida, vent = None):
     else:
         ax2.plot(signal[vent[0] : vent[1]], color=color)
         ax2.tick_params(axis='y', labelcolor=color)
+        #ax2.xticks(np.arange(vent[0], vent[1], step=1))
         img_file = "Imagenes/Superman_" + str(corrida) + "_vent.png"
 
     

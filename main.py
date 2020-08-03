@@ -8,7 +8,7 @@ import statistics
 #from fun_GA import select_ind, mate_ind,mutac_ind, buscarnegativos
 from fun_sys import run_test, gen_signal, add_noise, score_pob
 from fun_sys import FiltroFIR, FiltroEWMA
-from fun_log import log_clear, log_ind, log_ind_csv, log_time, plot_error, plot_best_ind, plot_clear, plot_comparacion, plot_comparacion_triple
+from fun_log import log_clear, log_ind, log_ind_csv, log_time, log_time_total, plot_error, plot_best_ind, plot_clear, plot_comparacion, plot_comparacion_triple
 from fun_gen import seleccion, mutacion, mutacion_rnd, cruza
 #from fun_log save_ind, load_data, plot_filtrados, plot_error, plot_comparacion, plot_best_indN, plot_in_out
 
@@ -44,7 +44,7 @@ per = [600]           #Periodos de cada tono
 fase = [0]          #Fases de cada tono
 muestras = 2000                 #Tamaño de la señal total
 
-amp_noise = 0.5                  #Amplitud del ruido
+amp_noise = 0                  #Amplitud del ruido
 
 """ Originales
 amp = [20, 10, 15]              #Amplitudes de cada tono
@@ -137,6 +137,8 @@ def eval_salida(pura, filtrada):
 
 # main ---------------------------------------------------------------------------------------------------------------------------
 def main():
+
+    log_time_total()
 
     #Limpio de una posible corrida anterior
     plot_clear()
@@ -231,7 +233,9 @@ def main():
             error_med[gen] = error_promedio_gen
             
             #Asignacion de puntajes
+            log_time("Puntuacion")
             poblacion_actual = score_pob(poblacion_actual, error_maximo, error_minimo)
+            log_time("Puntuacion")
 
             #Seleccion
             log_time("Seleccion")
@@ -264,6 +268,8 @@ def main():
     plot_comparacion(datos_orig, datos_puros, agujero_techo, "dEWMA parcial", [1400, 1800])
 
     plot_comparacion_triple(agujero_techo, filtrada_FIR[0], filtrada_EWMA[0], datos_puros, [1400, 1800])
+
+    log_time_total()
 
 
 
