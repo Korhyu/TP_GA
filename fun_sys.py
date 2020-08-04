@@ -50,7 +50,7 @@ def add_noise(amp, s):
     #if st.min() < 0:
     #    st = st - st.min()
 
-    return st
+    return [st, n]
 
 
 def FiltrodEWMA(param, data, Nmin, Nmax):

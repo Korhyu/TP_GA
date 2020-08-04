@@ -52,13 +52,14 @@ def log_ind (individuo, generacion, corrida):
 
 
     
-def log_ind_csv (individuo, corrida):
+def log_ind_csv (individuo, corrida, sigma_real = None):
     #Escribe el individuo en el log CSV
     
     with open(log_csv, mode='a') as csv_file:
-        fieldnames = ['N', 'gamma', 'alfa', 'sigma', 'corrida']
+        fieldnames = ['N', 'gamma', 'alfa', 'sigma', 'corrida', 'sigma real']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writerow({fieldnames[0]: individuo[0], fieldnames[1]: individuo[1], fieldnames[2]: individuo[2], fieldnames[3]: individuo[3], fieldnames[4]: corrida})
+        writer.writerow({fieldnames[0]: individuo[0], fieldnames[1]: individuo[1], fieldnames[2]: individuo[2],
+                        fieldnames[3]: individuo[3], fieldnames[4]: corrida, fieldnames[5]: sigma_real})
 
 
 
@@ -214,13 +215,13 @@ def plot_comparacion (original, pura, filtrada, nombre_filtro, vent = None):
 
     if vent is None:
         plt.plot(original, label = "Entrada a filtro")
-        plt.plot(pura, label = "Señal pura")
         plt.plot(filtrada, label = "Salida del filtro")
+        plt.plot(pura, label = "Señal pura")      
     else:
         plt.plot(original[vent[0] : vent[1]], label = "Entrada a filtro")
-        plt.plot(pura[vent[0] : vent[1]], label = "Señal pura")
         plt.plot(filtrada[vent[0] : vent[1]], label = "Salida del filtro")
-    
+        plt.plot(pura[vent[0] : vent[1]], label = "Señal pura")
+          
     plt.title(titulo)
     plt.legend(loc=1)
     plt.grid(True)
@@ -228,7 +229,7 @@ def plot_comparacion (original, pura, filtrada, nombre_filtro, vent = None):
     plt.close()
 
 
-def plot_comparacion_triple (filtro_dEWMA, filtro_FIR, filtro_EWMA, pura, vent = None):
+def plot_comparacion_triple (filtro_dEWMA, filtro_FIR, filtro_EWMA, pura, ruido = None, vent = None):
 
     titulo = "Comparacion entre filtros"
     archivo = "Imagenes/Comparacion_Triple.png"
@@ -238,11 +239,18 @@ def plot_comparacion_triple (filtro_dEWMA, filtro_FIR, filtro_EWMA, pura, vent =
     plt.xlabel('Muestras')
 
     if vent is None:
-        plt.plot(pura, label = "Señal Pura")
-        plt.plot(filtro_dEWMA, label = "dEWMA")
+        if ruido is not None:
+            plt.plot(ruido, label = "Señal entrada")
+
         plt.plot(filtro_FIR, label = "FIR")
         plt.plot(filtro_EWMA, label = "EWMA")
+        plt.plot(filtro_dEWMA, label = "dEWMA")
+        plt.plot(pura, label = "Señal Pura")
+
     else:
+        if ruido is not None:
+            plt.plot(ruido[vent[0] : vent[1]], label = "Señal entrada")
+
         plt.plot(pura[vent[0] : vent[1]], label = "Señal Pura")
         plt.plot(filtro_dEWMA[vent[0] : vent[1]], label = "dEWMA")
         plt.plot(filtro_FIR[vent[0] : vent[1]], label = "FIR")

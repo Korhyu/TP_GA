@@ -15,7 +15,7 @@ from fun_gen import seleccion, mutacion, mutacion_rnd, cruza
 
 
 # Parametros del GA ----------------------------------------------------------------------------------------------------------------------
-nGen = 100                   #Generaciones a correr
+nGen = 10                   #Generaciones a correr
 pDim = 50                     #Tamaño de la poblacion
 pMuta = 0.5                     #Probabilidad de que un individuo mute expresade en %
 pCruza = 10                    #probabilidad de cruza porcentual
@@ -29,7 +29,7 @@ lim_alfa = [1.01, 5]
 lim_gamma = [1.01, 10]
 lim_sigma = [0.1, 4]
 Nmax = 50
-Nmin = 1
+Nmin = 5
 lim_N = [Nmin, Nmax]
 
 
@@ -39,12 +39,12 @@ lim_N = [Nmin, Nmax]
 
 
 # Parametros de la señal de prueba -------------------------------------------------------------------------------------------------------
-amp = [10]              #Amplitudes de cada tono
-per = [600]           #Periodos de cada tono
-fase = [0]          #Fases de cada tono
+amp = [20, 10, 15]              #Amplitudes de cada tono
+per = [400, 250, 530]           #Periodos de cada tono
+fase = [0, 0.78, 1.57]          #Fases de cada tono
 muestras = 2000                 #Tamaño de la señal total
 
-amp_noise = 0                  #Amplitud del ruido
+amp_noise = 0.5                 #Amplitud del ruido
 
 """ Originales
 amp = [20, 10, 15]              #Amplitudes de cada tono
@@ -138,8 +138,6 @@ def eval_salida(pura, filtrada):
 # main ---------------------------------------------------------------------------------------------------------------------------
 def main():
 
-    log_time_total()
-
     #Limpio de una posible corrida anterior
     plot_clear()
     log_clear()
@@ -148,7 +146,7 @@ def main():
     # Generacion de datos --------------------------------------------------------------------------------------
     #datos_orig = load_data()                           #Obtengo los datos de contagio
     datos_puros = gen_signal(amp, per, fase, muestras)  #Genero la señal de prueba
-    datos_orig = add_noise(amp_noise, datos_puros)
+    [datos_orig, noise] = add_noise(amp_noise, datos_puros)
         
     filtrada_FIR = FiltroFIR(eq_FIR, datos_orig)        #Filtradas de comparacion
     filtrada_EWMA = FiltroEWMA(eq_EWMA, datos_orig)
@@ -158,9 +156,13 @@ def main():
     # -----------------------------------------------------------------------------------------------------------
 
 
+    #Calculo de sigma
+    sigma_real = eval_salida(noise, np.zeros(len(noise)))
+
     # Lazo de corridas ----------
     print('Se van a realizar',corridas_totales,'corridas totales')
     for corrida in range(corridas_totales):
+        log_time_total()
         print('Corrida numero',corrida,'de',corridas_totales)
 
         
@@ -196,7 +198,9 @@ def main():
             log_time("Filtrado dEWMA")
             for ind in range(len(poblacion_actual)):
                 #Aplicar  filtro a los tipitos
-                [salida_filtro, Ns] =  run_test(poblacion_actual[ind], datos_orig, Nmin, Nmax)
+                [salida_filtro, Ns] =  run_test(poblacion_actual[ind], datos_orig, Nmin, Nmax)                         #Filtro dEWMA
+                #[salida_filtro, Ns] =  run_test(poblacion_actual[ind], datos_orig, Nmin, Nmax)                          #Filtro FIR o EWMA
+                #poblacion_actual[ind][0] = Ns
         
                 #Evaluacion de la salida del filtro
                 error_actual = eval_salida(datos_puros, salida_filtro)
@@ -256,8 +260,8 @@ def main():
         log_ind(superman,gen_superman,corrida)
         log_ind_csv(superman, corrida)
         plot_error(error_min, error_max, error_med, error_minomorum, error_FIR, error_EWMA, corrida)
-        plot_best_ind(datos_puros, crec_superman, corrida)
-        plot_best_ind(datos_puros, crec_superman, corrida, [1400, 1800])
+        plot_best_ind(datos_orig, crec_superman, corrida)
+        plot_best_ind(datos_orig, crec_superman, corrida, [1400, 1800])
 
     plot_comparacion(datos_orig, datos_puros, filtrada_FIR[0], "FIR")
     plot_comparacion(datos_orig, datos_puros, filtrada_EWMA[0], "EWMA")
@@ -267,7 +271,7 @@ def main():
     plot_comparacion(datos_orig, datos_puros, filtrada_EWMA[0], "EWMA parcial", [1400, 1800])
     plot_comparacion(datos_orig, datos_puros, agujero_techo, "dEWMA parcial", [1400, 1800])
 
-    plot_comparacion_triple(agujero_techo, filtrada_FIR[0], filtrada_EWMA[0], datos_puros, [1400, 1800])
+    plot_comparacion_triple(agujero_techo, filtrada_FIR[0], filtrada_EWMA[0], datos_puros, datos_orig, [1400, 1800])
 
     log_time_total()
 
