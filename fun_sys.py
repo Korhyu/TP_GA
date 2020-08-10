@@ -131,7 +131,7 @@ def run_test(param, data, Nmin, Nmax):
     #este filtro debe recivir el vector de valores de contagio del COVID
 
     return FiltrodEWMA(param, data, Nmin, Nmax)
-    #return FiltroEWMA(param[0], data)
+    # return FiltroEWMA(param[0], data)
     #return FiltroFIR(param[0], data)
 
 

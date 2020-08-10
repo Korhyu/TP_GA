@@ -15,21 +15,21 @@ from fun_gen import seleccion, mutacion, mutacion_rnd, cruza
 
 
 # Parametros del GA ----------------------------------------------------------------------------------------------------------------------
-nGen = 10                   #Generaciones a correr
+nGen = 100                   #Generaciones a correr
 pDim = 50                     #Tamaño de la poblacion
 pMuta = 0.5                     #Probabilidad de que un individuo mute expresade en %
 pCruza = 10                    #probabilidad de cruza porcentual
 dMuta = 50                    #delta de Muta, osea cuanto puede variar en la mutacion expresado en %
 
-corridas_totales = 5
+corridas_totales = 20
 
 
 # Parametros del dEWMA -------------------------------------------------------------------------------------------------------------------
 lim_alfa = [1.01, 5]
 lim_gamma = [1.01, 10]
 lim_sigma = [0.1, 4]
-Nmax = 50
-Nmin = 5
+Nmax = 100
+Nmin = 1
 lim_N = [Nmin, Nmax]
 
 
@@ -39,28 +39,38 @@ lim_N = [Nmin, Nmax]
 
 
 # Parametros de la señal de prueba -------------------------------------------------------------------------------------------------------
+# <<<<<<< Updated upstream
+# amp = [20, 10, 15]              #Amplitudes de cada tono
+# per = [400, 250, 530]           #Periodos de cada tono
+# fase = [0, 0.78, 1.57]          #Fases de cada tono
+# muestras = 2000                 #Tamaño de la señal total
+
+amp_noise = 1.5                #Amplitud del ruido
+# =======
+# amp = [10]              #Amplitudes de cada tono
+# per = [600]           #Periodos de cada tono
+# fase = [0]          #Fases de cada tono
+# muestras = 2000                 #Tamaño de la señal total
+
+# amp_noise = 0.5                  #Amplitud del ruido
+# >>>>>>> Stashed changes
+
+# Originales
 amp = [20, 10, 15]              #Amplitudes de cada tono
 per = [400, 250, 530]           #Periodos de cada tono
 fase = [0, 0.78, 1.57]          #Fases de cada tono
 muestras = 2000                 #Tamaño de la señal total
 
-amp_noise = 0.5                 #Amplitud del ruido
-
-""" Originales
-amp = [20, 10, 15]              #Amplitudes de cada tono
-per = [400, 250, 530]           #Periodos de cada tono
-fase = [0, 0.78, 1.57]          #Fases de cada tono
-
 #"Trapezoide"
-amp = [-9.12, -2.28, 0, -0.57, -0.36]              #Amplitudes de cada tono
-per = [1000, 800, 250, 125, 62]           #Periodos de cada tono
-fase = [0.785, 0.785, 0.785, 0.785, 0.785]          #Fases de cada tono
-"""
+# amp = [-9.12, -2.28, 0, -0.57, -0.36]              #Amplitudes de cada tono
+# per = [1000, 800, 250, 125, 62]           #Periodos de cada tono
+# fase = [0.785, 0.785, 0.785, 0.785, 0.785]          #Fases de cada tono
+
 
 
 # Parametros de filtros de comparacion ---------------------------------------------------------------------------------------------------
-eq_FIR = 10                 #Valor N del filtro "equivalente" FIR
-eq_EWMA = 10                #Valor N del filtro "equivalente" EWMA
+eq_FIR = 6                 #Valor N del filtro "equivalente" FIR
+eq_EWMA = 6                #Valor N del filtro "equivalente" EWMA
 
 
 
@@ -74,7 +84,7 @@ eq_EWMA = 10                #Valor N del filtro "equivalente" EWMA
 
 # Funciones ------------------------------------------------------------------------------------------------------------------------------
 def param_rand():
-    #Genera los parametros aleatorios y los devuelve en una lista
+    #Genera los parametros aleatorios y los devuelve en una listas<
     # N - gamma - alfa - sigma - puntaje(fuera de esta funcion)
     param = [0, 0, 0, 0, 0]
 
@@ -123,11 +133,21 @@ def eval_salida(pura, filtrada):
     for i in range(punto_inicial, largo_total):
         errores_parciales.append((pura[i]-filtrada[i]) ** 2)
         
-    err = sum(errores_parciales) / len(filtrada)
+    err = sum(errores_parciales) / (largo_total - punto_inicial)
 
     return err
 
+def signal_sigma(signal):
+    """Calcula el sigma de la señal entregada"""
+    suma=0
+    largo_total = len(signal)
+    
+    for i in range(largo_total):
+        suma = suma + (signal[i] ** 2)
+        
+    sigma = (suma / largo_total) ** 0.5
 
+    return sigma
 
 
 
@@ -157,7 +177,7 @@ def main():
 
 
     #Calculo de sigma
-    sigma_real = eval_salida(noise, np.zeros(len(noise)))
+    sigma_real = signal_sigma(noise)
 
     # Lazo de corridas ----------
     print('Se van a realizar',corridas_totales,'corridas totales')
